@@ -36,6 +36,7 @@ class Client:
 		self.is_started = False
 
 	async def start(self):
+		self.is_started = True
 		browser = await pyppeteer.launch({
 			"headless": "new",
 			"args": puppeteerLaunchArgs,
