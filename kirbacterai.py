@@ -24,7 +24,7 @@ class Client:
 	def __init__(self):
 		self.headers = {
 			"content-type": "application/json",
-			"user-agent": 'CharacterAI/1.0.1 (iPhone; iOS 12.1.6; Scale/3.00)'
+			"user-agent": "CharacterAI/1.0.1 (iPhone; iOS 12.1.6; Scale/3.00)"
 		}
 		self.token = ""
 		self.page = None
@@ -49,8 +49,8 @@ class Client:
 		await self.page.deleteCookie()
 
 		client = await self.page.target.createCDPSession()
-		await client.send('Network.clearBrowserCookies')
-		await client.send('Network.clearBrowserCache')
+		await client.send("Network.clearBrowserCookies")
+		await client.send("Network.clearBrowserCache")
 
 		await self.page.setViewport({
 			"width": 1920,
@@ -72,9 +72,9 @@ class Client:
 			data = json.dumps(data)
 			self._change_payload = data
 		self._force_change = True
-		self.page.once('request', lambda req: asyncio.ensure_future(self.modify_request(req)))
+		self.page.once("request", lambda req: asyncio.ensure_future(self.modify_request(req)))
 		await self.page.setRequestInterception(True)
-		response = await self.page.goto(url, {"waitUntil": 'networkidle2'})
+		response = await self.page.goto(url, {"waitUntil": "networkidle2"})
 		return await response.json()
 
 	async def modify_request(self, request):
@@ -112,17 +112,17 @@ class Client:
 		uuid = str(uuid4())
 		data = {"lazy_uuid": uuid}
 		response = await self.send_request("POST", "https://beta.character.ai/chat/auth/lazy/", data=data)
-		self.token = response['token']
-		self.headers['authorization'] = f"Token {self.token}"
+		self.token = response["token"]
+		self.headers["authorization"] = f"Token {self.token}"
 		return response
 
 	async def auth_with_token(self, token):
 		if not self.is_started:
 			await self.start()
-		data = {'access_token': token}
+		data = {"access_token": token}
 		response = await self.send_request("POST", "https://beta.character.ai/dj-rest-auth/auth0/", data=data)
-		self.token = response['key']
-		self.headers['authorization'] = f"Token {self.token}"
+		self.token = response["key"]
+		self.headers["authorization"] = f"Token {self.token}"
 		return response
 
 	async def chat_create(self, character_id):
@@ -259,3 +259,16 @@ class Client:
 			await self.send_request("POST", "https://beta.character.ai/chat/character/info/", data=data)
 
 		return objects.Character(response["character"], client=self)
+
+	async def get_character_info(self, external_id):
+		data = {"external_id": external_id}
+		response = await self.send_request("POST", "https://beta.character.ai/chat/character/info/", data=data)
+		return objects.Character(response["character"])
+
+	async def get_character_from_link(self, link: str):
+		"""
+			Args:
+				link: link like "https://c.ai/c/bjy-Zgj-8taVBBogRgfjGf5tcHq_BUvzLuboIja6-jf"
+		"""
+		external_id = link.split("c.ai/c/")[1]
+		return await self.get_character_info(external_id)
