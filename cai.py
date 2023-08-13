@@ -17,8 +17,6 @@ puppeteerLaunchArgs = [
 	'--disable-extensions-http-throttling',
 	'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0'
 ]
-a = 1
-
 
 class CaiClient:
 	def __init__(self):
