@@ -256,9 +256,6 @@ class Client:
 			response = await self.send_request("POST", "https://beta.character.ai/chat/character/create/", data=data)
 			character = objects.Character(response["character"])
 
-			data = {"external_id": character.external_id}
-			await self.send_request("POST", "https://beta.character.ai/chat/character/info/", data=data)
-
 		return objects.Character(response["character"], client=self)
 
 	async def get_character_info(self, external_id):
