@@ -4,6 +4,7 @@ import pyppeteer
 import objects
 from uuid import uuid4
 from pyppeteer_stealth import stealth
+from helpers import js_simple_request
 
 puppeteerLaunchArgs = [
 	'--fast-start',
@@ -18,7 +19,8 @@ puppeteerLaunchArgs = [
 	'--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0'
 ]
 
-class CaiClient:
+
+class Client:
 	def __init__(self):
 		self.headers = {
 			"content-type": "application/json",
@@ -31,6 +33,7 @@ class CaiClient:
 		self._go_url = None
 		self._method = None
 		self._force_change = False
+		self.is_started = False
 
 	async def start(self):
 		browser = await pyppeteer.launch({
@@ -62,12 +65,11 @@ class CaiClient:
 		await self.page.goto("https://beta.character.ai")
 		await self.page.waitFor(2000)
 
-	async def send_request(self, method, url, data: dict = None, upload_image: bool = False):
+	async def send_request(self, method, url, data: dict = None):
 		self._method = method
 		self._go_url = url
 		if data is not None:
-			if not upload_image:
-				data = json.dumps(data)
+			data = json.dumps(data)
 			self._change_payload = data
 		self._force_change = True
 		self.page.once('request', lambda req: asyncio.ensure_future(self.modify_request(req)))
@@ -95,8 +97,7 @@ class CaiClient:
 
 	async def request_by_eval(self, url, data):
 		await self.page.setRequestInterception(False)
-		with open('request.js', "r+") as f:
-			code = f.read()
+		code = js_simple_request
 		code = code.replace("MY_METHOD", "POST")
 		code = code.replace("MY_HEADERS", str(self.headers))
 		data = str(data).replace("None", "null").replace("True", "true").replace("False", "false").replace('"', "")
@@ -105,7 +106,9 @@ class CaiClient:
 		response = json.loads(await self.page.evaluate(code))
 		return response
 
-	async def guest_auth(self):
+	async def auth_as_guest(self):
+		if not self.is_started:
+			await self.start()
 		uuid = str(uuid4())
 		data = {"lazy_uuid": uuid}
 		response = await self.send_request("POST", "https://beta.character.ai/chat/auth/lazy/", data=data)
@@ -114,6 +117,8 @@ class CaiClient:
 		return response
 
 	async def auth_with_token(self, token):
+		if not self.is_started:
+			await self.start()
 		data = {'access_token': token}
 		response = await self.send_request("POST", "https://beta.character.ai/dj-rest-auth/auth0/", data=data)
 		self.token = response['key']
@@ -210,7 +215,7 @@ class CaiClient:
 
 	async def create_or_update_character(self, name: str = None, title: str = None, greeting: str = "", description: str = "",
 										definition: str = "", voice_id: int = 38, visibility: str = "PUBLIC",
-										categories=None, character=None, update: bool = False):
+										categories=[], character=None, update: bool = False):
 		"""
 		Args:
 			definition: An example of chatting with a bot like this one
@@ -225,7 +230,6 @@ class CaiClient:
 			"visibility": visibility if visibility is not None else character.visibility if character is not None else None,
 			"greeting": greeting if greeting is not None else character.greeting if character is not None else None,
 			"name": name if name is not None else character.name if character is not None else None,
-			"categories": categories if categories is not None else character.categories if character is not None else None,
 			"description": description if description is not None else character.description if character is not None else None,
 			"definition": definition if definition is not None else character.definition if character is not None else None,
 			"img_gen_enabled": False,  # TODO
@@ -234,6 +238,13 @@ class CaiClient:
 			"title": title if title is not None else character.title if character is not None else None,
 			"avatar_rel_path": ""  # TODO
 		}
+
+		data["categories"] = []
+		for category in categories:
+			if isinstance(category, objects.Category):
+				data["categories"].append(category.name)
+			else:
+				data["categories"].append(category)
 
 		if update:
 			data["external_id"] = character.external_id
