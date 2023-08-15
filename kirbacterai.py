@@ -101,7 +101,7 @@ class Client:
 		code = js_simple_request
 		code = code.replace("MY_METHOD", "POST")
 		code = code.replace("MY_HEADERS", str(self.headers))
-		data = str(data).replace("None", "null").replace("True", "true").replace("False", "false").replace('"', "")
+		data = str(data).replace("None", "null").replace("True", "true").replace("False", "false")
 		code = code.replace("MY_BODY", data)
 		code = code.replace("MY_URL", url)
 		response = json.loads(await self.page.evaluate(code))
