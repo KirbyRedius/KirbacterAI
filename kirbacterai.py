@@ -269,4 +269,4 @@ class Client:
 				link: link like "https://c.ai/c/bjy-Zgj-8taVBBogRgfjGf5tcHq_BUvzLuboIja6-jf"
 		"""
 		external_id = link.split("c.ai/c/")[1]
-		return await objects.Character(self.get_character_info(external_id))
+		return await self.get_character_info(external_id)
