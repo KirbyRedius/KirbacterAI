@@ -1,10 +1,10 @@
 import asyncio
 import json
 import pyppeteer
-import objects
 from uuid import uuid4
 from pyppeteer_stealth import stealth
-from helpers import js_simple_request
+from kirbacterai.helpers import js_simple_request
+from kirbacterai import objects
 
 puppeteerLaunchArgs = [
 	'--fast-start',
