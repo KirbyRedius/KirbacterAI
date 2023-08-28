@@ -54,13 +54,7 @@ To get it, you can open your browser, go to the <a href="https://character.ai" r
 ❒ Open the body and copy the access token.
 <br><br/>
 ![image](https://github.com/KirbyRedius/CharacterAI/assets/142050294/89a804e1-1d51-4caa-a01e-6824c08912ef)
-
 ---
-
-<div id="header" align="center">
-  <img src="https://media.tenor.com/oBAv0Q0H8O4AAAAi/scratch-cat.gif" width="250"/>
-</div>
-
 <br><br>
 
 ## Node.js version
@@ -71,3 +65,11 @@ Most of the stuff was taken from another _JavaScript_ repository:
 - [Character AI Unofficial Node API](https://github.com/realcoloride/node_characterai)
 
 --- 
+
+
+<div id="header" align="center">
+  <img src="https://media.tenor.com/oBAv0Q0H8O4AAAAi/scratch-cat.gif" width="250"/>
+</div>
+
+<br><br>
+
