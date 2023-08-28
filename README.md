@@ -38,11 +38,10 @@ asyncio.get_event_loop().run_until_complete(main())
 <br><br>
 
 ## Using an Access Token
-**<p dir="auto"> :heavy_exclamation_mark: Some parts of the API, like managing a conversation requires for you to be logged in using an <code>accessToken</code>.
-To get it, you can open your browser, go to the <a href="https://character.ai" rel="nofollow">character.ai website</a> in <code>localStorage</code>.</p>**
+*<p dir="auto"> :heavy_exclamation_mark: Some parts of the API, like managing a conversation requires for you to be logged in using an <code>accessToken</code>.
+To get it, you can open your browser, go to the <a href="https://character.ai" rel="nofollow">character.ai website</a> in <code>localStorage</code>.</p>*
 
-<ins dir="auto"> — To do so:</ins>               
-
+ — To do so:      
 ❒ Open the Character AI website in your browser
 <br><br/>
 ❒ Open the developer tools <code>F12</code> and go to the <code>Application</code> tab.
