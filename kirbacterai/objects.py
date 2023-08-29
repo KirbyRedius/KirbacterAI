@@ -17,10 +17,6 @@ class Chat:
     async def send_message(self, text):
         return await self.client.send_message(self, text)
 
-    async def create_chat(self):
-        return await self.client.chat_create(self.character_id)
-
-
 class Participant:
     def __init__(self, data):
         self.user = User(data["user"]) if "user" in data else None
