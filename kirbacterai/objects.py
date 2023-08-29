@@ -17,6 +17,7 @@ class Chat:
     async def send_message(self, text):
         return await self.client.send_message(self, text)
 
+
 class Participant:
     def __init__(self, data):
         self.user = User(data["user"]) if "user" in data else None
