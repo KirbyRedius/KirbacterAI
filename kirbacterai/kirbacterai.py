@@ -3,7 +3,6 @@ import json
 import pyppeteer
 from uuid import uuid4
 from pyppeteer_stealth import stealth
-from kirbacterai.helpers import js_simple_request
 from kirbacterai import objects
 
 puppeteerLaunchArgs = [
@@ -98,13 +97,20 @@ class Client:
 
     async def request_by_eval(self, url, data):
         await self.page.setRequestInterception(False)
-        code = js_simple_request
-        code = code.replace("MY_METHOD", "POST")
-        code = code.replace("MY_HEADERS", str(self.headers))
-        data = str(data).replace("None", "null").replace("True", "true").replace("False", "false")
-        code = code.replace("MY_BODY", data)
-        code = code.replace("MY_URL", url)
-        response = json.loads(await self.page.evaluate(code))
+        code = """
+        async () => {
+            const payload = {
+                method: "POST",
+                headers: %s,
+                body: JSON.stringify(%s)
+            }
+            const response = await window.fetch("%s", payload)
+        
+            return await response.text()
+        }
+        """ % (self.headers, json.dumps(data), url)
+        response = await self.page.evaluate(code)
+        response = json.loads(response)
         return response
 
     async def auth_as_guest(self):
